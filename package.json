@@ -1,0 +1,60 @@
+{
+	"name": "xt8",
+	"version": "0.0.1",
+	"license": "MIT",
+	"author": {
+		"name": "Thorsten Roggendorf",
+		"email": "floss@schrotie.de",
+		"url": "http://schrotie.de"
+	},
+	"description": "Small, easy, pub/sub, pluggable, proxy based state manager",
+	"homepage": "https://github.com/schrotie/xt8#readme",
+	"bugs": {
+		"url": "https://github.com/shrotie/xt8/issues",
+		"email": "floss@schrotie.de"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/schrotie/xt8"
+	},
+	"files": [
+		"documentation/**",
+		"index.mjs",
+		"index.min.mjs"
+	],
+	"directories": {
+		"doc": "documentation",
+		"example": "demo",
+		"test": "test"
+	},
+	"keywords": [
+		"browser",
+		"node",
+		"javascript",
+		"library"
+	],
+	"browser": "index.mjs",
+	"devDependencies": {
+		"c8": "latest",
+		"chai": "latest",
+		"eslint": "^8.4.1",
+		"eslint-config-google": "^0.7.1",
+		"jsdoc": "latest",
+		"jsdoc-to-markdown": "^4.0.1",
+		"mocha": "latest",
+		"onchange": "latest",
+		"rollup": "latest",
+		"uglify-es": "latest"
+	},
+	"scripts": {
+		"build": "npm run-script build-doc; npm run-script uglify",
+		"build:dbg": "npm run-script build-doc; ./node_modules/.bin/rollup  index.mjs > index.min.mjs;",
+		"build-doc": "cp index.mjs s.js; ./node_modules/.bin/jsdoc2md --separators -f s.js > documentation/api/README.md; rm s.js",
+		"lint": "eslint . --ext js,mjs --ignore-path .gitignore",
+		"prepare": "npm run build",
+		"tdd": "./node_modules/.bin/onchange 'src/**/*.mjs' 'test/**/*.mjs' -- npm test",
+		"test": "./node_modules/.bin/c8  --check-coverage --lines=100 --functions=100 --statements=100 --branches=100 --all --include=src ./node_modules/.bin/mocha --recursive",
+		"test-dbg": "./node_modules/.bin/c8  --check-coverage --lines=100 --functions=100 --statements=100 --branches=100 --all --include=src ./node_modules/.bin/mocha --recursive --inspect-brk",
+		"uglify": "./node_modules/.bin/rollup  index.mjs | ./node_modules/uglify-es/bin/uglifyjs -c -m --keep-fnames > index.min.mjs; sed -i '1s;^;/* eslint-disable */\\n;' index.min.mjs"
+	}
+}
