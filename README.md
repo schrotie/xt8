@@ -148,7 +148,7 @@ The following validators are available:
 * *sameType* setters cannot change the type (typeof) of the affected property
 * *oneOf* validate set against enum (value array)
 * *int* property only accepts intergers in set
-* *configureTempla* allows you to define the structure of your state in one call, see demo
+* *configureTemplate* allows you to define the structure of your state in one call, see demo
 
 The actual validators have the same name as their respective setup-functions
 with an appended "Validator". You'll also need to use the actual validators
