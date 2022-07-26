@@ -37,7 +37,7 @@ property gets and sets to the underlying plain state object (you may also
 use classes e.g. with getters and setters instead of a plain object). The only
 thing it really does is wrap sub-objects in nested Proxies and handles setting
 deep sub-object (e.g. state.obj = {foo: 'bar'}) so that deep subscriptions and
-hooks are called (in this example e.g. the subscriptions for 'foo.bar', 'foo',
+hooks are called (in this example e.g. the subscriptions for 'obj.foo', 'obj',
 and '\*').
 
 Apart of that it handles subscriptions and hooks. These are fascilities that
@@ -148,4 +148,23 @@ The following validators are available:
 * *sameType* setters cannot change the type (typeof) of the affected property
 * *oneOf* validate set against enum (value array)
 * *int* property only accepts intergers in set
-* *template* allows you to define the structure of your state in one call, see demo
+* *configureTempla* allows you to define the structure of your state in one call, see demo
+
+The actual validators have the same name as their respective setup-functions
+with an appended "Validator". You'll also need to use the actual validators
+instead of setup functions if you for example want to register `mustHave` only
+for setters. In this case, getters would just return undefined und deletes
+would silently delete a non-existing property.
+
+`configureTemplate` is pretty specific and does a relative lot of things. It
+provides a very easy way of defining and enforcing the structure and typografy
+of your state store. It's a good way to get started with a project. It will help
+you remain consistent while you keep adding stuff to your state and perpetually
+remind you to clean up previous versions of your state, should they linger
+somewhere. However, in later phases of your project, you may want to replace
+this somewhat simple template mechanism with a more elaborate state validation
+engine of your own design. Please refer to the demo on how to use
+`configureTemplate`.
+
+
+I hope you find xt8 useful.
