@@ -1,6 +1,6 @@
 {
 	"name": "xt8",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"license": "MIT",
 	"author": {
 		"name": "Thorsten Roggendorf",
@@ -23,8 +23,9 @@
 		"index.min.mjs"
 	],
 	"directories": {
+		"demo": "demo",
 		"doc": "documentation",
-		"example": "demo",
+		"src": "src",
 		"test": "test"
 	},
 	"keywords": [
