@@ -1,3 +1,7 @@
+0.0.3
+* several fixes having to do with templates
+* correctly list properties generated from hooks
+* added special hooks-map to make this work
 0.0.2
 * doc fix
 * fixed packaged dirs

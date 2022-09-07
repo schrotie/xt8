@@ -8,19 +8,21 @@ import {
 	unhookSet,
 } from './hook.mjs';
 import {create} from './proxy.mjs';
-import {delPropOnlyArray, isWellKnownSymbol} from './validate.mjs';
+import {
+	/* delPropOnlyArray, delPropOnlyArrayValidator, */isWellKnownSymbol,
+} from './validate.mjs';
 
 export function configureTemplate(template) {
 	const getter = getFromTemplate(template);
 	const setter = setAsInTemplate(template);
-	hookDel(delPropOnlyArray);
+	// delPropOnlyArray('*');
 	hookGet(getter);
 	hookSet(setter);
 	return revert(getter, setter);
 }
 
 function revert(getter, setter) {return function() {
-	unhookDel(delPropOnlyArray);
+	// unhookDel(delPropOnlyArrayValidator);
 	unhookGet(getter);
 	unhookSet(setter);
 };}
@@ -40,6 +42,7 @@ function setAsInTemplate(template) {return function(path, target, prop, value) {
 		return setArrayAsInTemplate(template, path, target, prop, value);
 	}
 	else {
+		if(value === null) return CONTINUE;
 		if((typeof getPath(template, path)) === (typeof value)) return CONTINUE;
 		throw new Error(`Cannot set invalid type "${typeof value}" ("${value}") \
 to path "${path}"`);
@@ -60,6 +63,7 @@ function validateLength(path, target, prop) {
 }
 
 function validateProperty(template, path, value) {
+	if(value === null) return;
 	if((typeof getPath(template, path)) !== (typeof value)) {
 		throw new TypeError(`Cannot set invalid type "${typeof value}" \
 ("${value}") to path "${path.join('.')}"`);
@@ -80,10 +84,16 @@ function validateObject(template, path, value) {
 
 function getPath(obj, path) {
 	for(const key of path) {
-		if(!(key in obj)) {
-			throw new Error(`Cannot access unknown property "${path.join('.')}"`);
+		if(Array.isArray(obj) && /^\d+$/.test(key)) {
+			obj = obj[0];
+			continue;
 		}
+		if(!(key in obj)) unknownError(path);
 		obj = obj[key];
 	}
 	return obj;
+}
+
+function unknownError(path) {
+	throw new Error(`Cannot access unknown property "${path.join('.')}"`);
 }

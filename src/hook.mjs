@@ -1,8 +1,9 @@
-export const CONTINUE = Symbol('continue');
+export {CONTINUE} from './HookMap.mjs';
 
-const del = new Map();
-const get = new Map();
-const set = new Map();
+import HookMap from './HookMap.mjs';
+const del = new HookMap();
+const get = new HookMap();
+const set = new HookMap();
 
 export const     hookDel =     hook(del);
 export const     hookGet =     hook(get);
@@ -13,6 +14,9 @@ export const   unhookSet =   unhook(set);
 export const callHookDel = callHook(del);
 export const callHookGet = callHook(get);
 export const callHookSet = callHook(set);
+export const listHookDel = listHook(del);
+export const listHookGet = listHook(get);
+export const listHookSet = listHook(set);
 
 function hook(hooks) {return function hook(path, callback) {
 	if(typeof path == 'function') return hook('*', path);
@@ -27,18 +31,11 @@ function unhook(hooks) {return function unhook(path, callback) {
 	const idx = callbacks.indexOf(callback);
 	if(idx === -1) throw new Error(`Cannot unhook "${path}" - hook not found`);
 	callbacks.splice(idx, 1);
-	if(!callbacks.length) hooks.delete(path);
+	if(!callbacks.length) hooks.del(path);
 };}
 
 function callHook(hooks) {return function* callHook(path, ...args) {
-	path = path.join('.');
-	for(const res of results(hooks.get('*'),  path, args)) return yield res;
-	for(const res of results(hooks.get(path), path, args)) return yield res;
+	for(const res of hooks.call(path, args)) return yield res;
 };}
 
-function* results(callbacks, path, args) {
-	if(callbacks) {for(const callback of callbacks) {
-		const result = callback(path, ...args);
-		if(result !== CONTINUE) yield result;
-	}}
-}
+function listHook(hooks) {return function(path) {return hooks.list(path);};}

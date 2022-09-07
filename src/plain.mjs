@@ -1,5 +1,6 @@
 export function plain(node) {
 	if(Array.isArray(node))      return node.map(plain);
+	if(node        === null    ) return null;
 	if(typeof node === 'object') return plainObject(node);
 	return node;
 }

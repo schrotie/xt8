@@ -1,5 +1,5 @@
 import {publish} from './subscribe.mjs';
-import {callHookDel, callHookGet, callHookSet} from './hook.mjs';
+import {callHookDel, callHookGet, callHookSet, listHookGet} from './hook.mjs';
 
 export function create(obj, path = []) {
 	return new Proxy(obj, new OHandler(path));
@@ -11,6 +11,7 @@ class OHandler {
 		const path = [...this.path, prop.toString()];
 		for(const result of callHookGet(path, target, prop)) return result;
 		const p = target[prop];
+		if(p === null) return null;
 		switch(typeof p) {
 			case 'function': return p; // new Proxy(p, new FHandler(path, target));
 			case 'object':   return create(p, path);
@@ -20,7 +21,7 @@ class OHandler {
 	set(target, prop, value) {
 		const path = [...this.path, prop.toString()];
 		for(const result of callHookSet(path, target, prop, value)) return result;
-		if(typeof target[prop] === 'object') {
+		if(target[prop] && (typeof target[prop] === 'object')) {
 			setSubObject(path, target[prop], value);
 		}
 		else setProp(path, target, prop, value);
@@ -33,6 +34,21 @@ class OHandler {
 		Reflect.deleteProperty(target, prop);
 		publish(path);
 		return true;
+	}
+	ownKeys(target) {
+		return Reflect
+			.ownKeys(target)
+			.concat(Object.keys(listHookGet(this.path)))
+			.filter((key, idx, keys) => keys.indexOf(key) === idx);
+		// const keys = Reflect.ownKeys(target)
+		// 	.concat(Object.keys(listHookGet(this.path)));
+		// console.log('ownKeys', this.path, Reflect.ownKeys(target), keys);
+		// return keys.filter((key, idx) => keys.indexOf(key) === idx);
+	}
+	getOwnPropertyDescriptor(target, prop) {
+		const hooks = listHookGet(this.path);
+		if(hooks[prop]) return {enumerable: true, configurable: true, get: hooks[prop]};
+		return Reflect.getOwnPropertyDescriptor(target, prop);
 	}
 }
 
