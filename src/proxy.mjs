@@ -21,7 +21,8 @@ class OHandler {
 	set(target, prop, value) {
 		const path = [...this.path, prop.toString()];
 		for(const result of callHookSet(path, target, prop, value)) return result;
-		if(target[prop] && (typeof target[prop] === 'object')) {
+		if(Array.isArray(target[prop])) setSubArray(path, target[prop], value);
+		else if(target[prop] && (typeof target[prop] === 'object')) {
 			setSubObject(path, target[prop], value);
 		}
 		else setProp(path, target, prop, value);
@@ -50,6 +51,11 @@ class OHandler {
 		if(hooks[prop]) return {enumerable: true, configurable: true, get: hooks[prop]};
 		return Reflect.getOwnPropertyDescriptor(target, prop);
 	}
+}
+
+function setSubArray(path, target, value) {
+	const proxy = create(target, path);
+	proxy.splice(0, target.length, ...value);
 }
 
 function setSubObject(path, target, value) {

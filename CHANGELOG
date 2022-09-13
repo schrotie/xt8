@@ -1,7 +1,11 @@
-0.0.3
+0.0.5
+* bugfix setting subarray (length was not adapted)
+0.0.4
 * several fixes having to do with templates
 * correctly list properties generated from hooks
 * added special hooks-map to make this work
+0.0.3
+* fixed package files
 0.0.2
 * doc fix
 * fixed packaged dirs
