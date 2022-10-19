@@ -19,6 +19,7 @@ describe('proxy', function() {
 				obj: {atom: 0},
 				array: [0],
 			}],
+			null: null,
 		};
 		state = create(obj);
 	});
@@ -48,6 +49,10 @@ describe('proxy', function() {
 		state.obj = set;
 		obj.obj.should.deep.equal(set);
 		(obj.obj === set).should.be.false;
+	});
+
+	it('should set over null', function() {
+		state.null = {};
 	});
 
 	it('should add property', () => {

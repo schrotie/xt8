@@ -1,3 +1,5 @@
+0.0.6
+* bugfix: handlung null
 0.0.5
 * bugfix setting subarray (length was not adapted)
 0.0.4

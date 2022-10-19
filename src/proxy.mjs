@@ -21,10 +21,9 @@ class OHandler {
 	set(target, prop, value) {
 		const path = [...this.path, prop.toString()];
 		for(const result of callHookSet(path, target, prop, value)) return result;
-		if(Array.isArray(target[prop])) setSubArray(path, target[prop], value);
-		else if(target[prop] && (typeof target[prop] === 'object')) {
-			setSubObject(path, target[prop], value);
-		}
+		if(Array.isArray(target[prop])) setSubArray( path, target[prop], value);
+		else if(isNull(target, prop, value)) setProp(path, target, prop, value);
+		else if(isObject(target, prop)) setSubObject(path, target[prop], value);
 		else setProp(path, target, prop, value);
 		return true;
 	}
@@ -48,7 +47,9 @@ class OHandler {
 	}
 	getOwnPropertyDescriptor(target, prop) {
 		const hooks = listHookGet(this.path);
-		if(hooks[prop]) return {enumerable: true, configurable: true, get: hooks[prop]};
+		if(hooks[prop]) {
+			return {enumerable: true, configurable: true, get: hooks[prop]};
+		}
 		return Reflect.getOwnPropertyDescriptor(target, prop);
 	}
 }
@@ -56,6 +57,13 @@ class OHandler {
 function setSubArray(path, target, value) {
 	const proxy = create(target, path);
 	proxy.splice(0, target.length, ...value);
+}
+
+function isNull(target, prop, value) {
+	return isObject(target, prop) && (value === null);
+}
+function isObject(target, prop) {
+	return (target[prop] && (typeof target[prop] === 'object')) ? true : false;
 }
 
 function setSubObject(path, target, value) {
